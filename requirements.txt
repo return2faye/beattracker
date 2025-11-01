@@ -1,0 +1,18 @@
+# --- Core data handling ---
+pandas
+ndjson
+orjson
+
+# --- Graph construction ---
+networkx
+
+# --- Neo4j integration (optional if using Neo4j backend) ---
+neo4j
+py2neo
+
+# --- Graph visualization (.dot, optional) ---
+graphviz
+
+# --- Command-line usability & display ---
+tqdm
+rich
