@@ -5,6 +5,15 @@ class NDJSONParser:
     def __init__(self, filepath: str):
         self.filepath = filepath
 
+    @staticmethod
+    def _attach_tags(ev: Dict, record: Dict) -> Dict:
+        tags = ev.get("tags")
+        if tags:
+            record["tags"] = list(tags)
+        else:
+            record.setdefault("tags", [])
+        return record
+
     # ---------- streaming ----------
     def stream_events(self) -> Iterator[Dict]:
         with open(self.filepath, "r", encoding="utf-8") as f:
@@ -119,7 +128,7 @@ class NDJSONParser:
                 exe = p.get("name")
             if p.get("inode") and inode is None:
                 inode = p.get("inode")
-        yield {
+        yield self._attach_tags(ev, {
             "timestamp": ev.get("@timestamp"),
             "action": act,
             "pid": ev.get("process", {}).get("pid"),
@@ -128,13 +137,13 @@ class NDJSONParser:
             "file_path": exe,
             "inode": inode,
             "edge_dir": "file->process",
-        }
+        })
 
     def _emit_file_rw(self, ev: Dict, act: str) -> Iterator[Dict]:
         # read/open 视作进程访问文件内容；write 代表进程写入
         edge = "process->file" if act in {"read", "open", "openat"} else "process->file"
         for p in self._paths(ev):
-            yield {
+            yield self._attach_tags(ev, {
                 "timestamp": ev.get("@timestamp"),
                 "action": act,
                 "pid": ev.get("process", {}).get("pid"),
@@ -143,12 +152,12 @@ class NDJSONParser:
                 "file_path": p.get("name"),
                 "inode": p.get("inode"),
                 "edge_dir": edge,
-            }
+            })
 
     def _emit_mmap(self, ev: Dict, act: str) -> Iterator[Dict]:
         # 简化处理：读 mmap 视作 file->process；若能取到 prot/flags 可细化
         for p in self._paths(ev):
-            yield {
+            yield self._attach_tags(ev, {
                 "timestamp": ev.get("@timestamp"),
                 "action": act,
                 "pid": ev.get("process", {}).get("pid"),
@@ -157,13 +166,13 @@ class NDJSONParser:
                 "file_path": p.get("name"),
                 "inode": p.get("inode"),
                 "edge_dir": "file->process",
-            }
+            })
 
     def _emit_net(self, ev: Dict, act: str) -> Iterator[Dict]:
         s = self._socket_tuple(ev)
         if not s:
             return
-        yield {
+        yield self._attach_tags(ev, {
             "timestamp": ev.get("@timestamp"),
             "action": act,
             "pid": ev.get("process", {}).get("pid"),
@@ -171,7 +180,7 @@ class NDJSONParser:
             "exe": ev.get("process", {}).get("executable"),
             "socket": s,
             "edge_dir": "process->socket" if act in {"connect"} else "socket->process",
-        }
+        })
 
     # ---------- public parse ----------
    # ---------- public parse ----------

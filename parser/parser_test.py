@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from parser.ndjson_parser import NDJSONParser  # noqa: E402
-from parser.backtracker import Backtracker  # noqa: E402
+from tracker import Backtracker  # noqa: E402
 
 DATA_PATH = Path(__file__).resolve().parents[1] / "logs" / "auditbeat-20251031.ndjson"
 

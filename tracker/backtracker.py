@@ -256,7 +256,8 @@ class Backtracker:
         return {"nodes": nodes_out, "edges": edges_out}
 
     # ---------- export ----------
-    def export_dot(self, traced: Dict[str, List[Dict[str, Any]]]) -> str:
+    @staticmethod
+    def export_dot(traced: Dict[str, List[Dict[str, Any]]]) -> str:
         def node_key(node: Dict[str, Any]) -> str:
             ntype = node.get("type")
             ident = node.get("id")
