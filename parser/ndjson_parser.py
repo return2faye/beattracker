@@ -131,8 +131,8 @@ class NDJSONParser:
         }
 
     def _emit_file_rw(self, ev: Dict, act: str) -> Iterator[Dict]:
-        # read: file->process; write: process->file; open/openat 既可能读也可能写，这里简单按 read 处理，后续可根据 flags 强化
-        edge = "file->process" if act in {"read", "open", "openat"} else "process->file"
+        # read/open 视作进程访问文件内容；write 代表进程写入
+        edge = "process->file" if act in {"read", "open", "openat"} else "process->file"
         for p in self._paths(ev):
             yield {
                 "timestamp": ev.get("@timestamp"),
@@ -209,4 +209,3 @@ class NDJSONParser:
             # 其他未来想加入的如 rename/unlink/chmod 可继续扩展：
             # elif act == "file_rename":
             #     ...
-
