@@ -275,6 +275,8 @@ class Backtracker:
                 label = f"process\\n{node.get('pid')}"
                 if node.get("exe"):
                     label += f"\\n{node['exe']}"
+                if node.get("activity_label"):
+                    label += f"\\n{node['activity_label']}"
                 return label
             if ntype == "file":
                 ident = node.get("inode") or node.get("path") or node.get("id")
@@ -303,11 +305,15 @@ class Backtracker:
             src = edge_key(edge.get("src", {}))
             dst = edge_key(edge.get("dst", {}))
             action = edge.get("action") or ""
+            order = edge.get("order")
             ts = edge.get("timestamp") or ""
             if action and ts:
                 label = f"{action}\\n{ts}"
             else:
                 label = action or ts
+            if order is not None:
+                prefix = f"{order}. "
+                label = f"{prefix}{label}" if label else prefix.rstrip()
             label = (label or "").replace('"', r'\"')
             lines.append(f'  "{src}" -> "{dst}" [label="{label}"];')
 

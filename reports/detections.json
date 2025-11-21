@@ -1,0 +1,279 @@
+{
+  "detections": [
+    {
+      "index": 155,
+      "matched_tags": [
+        "secret_read"
+      ],
+      "event": {
+        "timestamp": "2025-10-31T06:20:19.666Z",
+        "action": "read",
+        "pid": 339821,
+        "ppid": 339820,
+        "exe": "/home/student/Downloads/program11",
+        "file_path": "/home/student/secret/secret.txt",
+        "inode": "1058659",
+        "edge_dir": "process->file",
+        "tags": [
+          "secret_read"
+        ]
+      },
+      "backtrack_start": {
+        "type": "inode",
+        "id": "1058659"
+      },
+      "trace": {
+        "nodes": [
+          {
+            "type": "file",
+            "inode": "1058659",
+            "path": "/home/student/secret/secret.txt",
+            "id": "1058659"
+          },
+          {
+            "type": "proc",
+            "pid": 339821,
+            "exe": "/home/student/Downloads/program11",
+            "id": 339821
+          },
+          {
+            "type": "proc",
+            "pid": 339820,
+            "exe": "/home/student/Downloads/program11",
+            "id": 339820
+          },
+          {
+            "type": "file",
+            "inode": "1058685",
+            "path": "/home/student/Downloads/program11",
+            "id": "1058685"
+          },
+          {
+            "type": "proc",
+            "pid": 339726,
+            "exe": "/usr/bin/sudo",
+            "id": 339726
+          },
+          {
+            "type": "file",
+            "inode": "278270",
+            "path": "/usr/bin/sudo",
+            "id": "278270"
+          },
+          {
+            "type": "proc",
+            "pid": 339796,
+            "exe": "/usr/bin/curl",
+            "id": 339796
+          },
+          {
+            "type": "file",
+            "inode": "277585",
+            "path": "/usr/bin/curl",
+            "id": "277585"
+          }
+        ],
+        "edges": [
+          {
+            "src": {
+              "type": "proc",
+              "id": 339821
+            },
+            "dst": {
+              "type": "file",
+              "id": "1058659"
+            },
+            "action": "read",
+            "timestamp": "2025-10-31T06:20:19.666Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339820
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339821
+            },
+            "action": "ppid",
+            "timestamp": "2025-10-31T06:20:19.666Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "1058685"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339821
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.666Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339820
+            },
+            "action": "ppid",
+            "timestamp": "2025-10-31T06:20:19.658Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339820
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.654Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339796
+            },
+            "dst": {
+              "type": "file",
+              "id": "1058685"
+            },
+            "action": "read",
+            "timestamp": "2025-10-31T06:20:19.450Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339796
+            },
+            "action": "ppid",
+            "timestamp": "2025-10-31T06:20:19.450Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "277585"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339796
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.438Z"
+          }
+        ]
+      },
+      "forward_start": {
+        "type": "pid",
+        "id": 339821
+      },
+      "forward_trace": {
+        "nodes": [
+          {
+            "type": "proc",
+            "pid": 339821,
+            "exe": "/home/student/Downloads/program11",
+            "activity_label": "2025-10-31T06:20:19.666Z read /home/student/secret/secret.txt\\n2025-10-31T06:20:19.666Z exec /home/student/Downloads/program11",
+            "id": 339821
+          },
+          {
+            "type": "file",
+            "inode": "1058659",
+            "path": "/home/student/secret/secret.txt",
+            "id": "1058659"
+          },
+          {
+            "type": "proc",
+            "pid": 339820,
+            "exe": "/home/student/Downloads/program11",
+            "id": 339820
+          },
+          {
+            "type": "proc",
+            "pid": 339726,
+            "id": 339726
+          }
+        ],
+        "edges": [
+          {
+            "src": {
+              "type": "proc",
+              "id": 339821
+            },
+            "dst": {
+              "type": "file",
+              "id": "1058659"
+            },
+            "action": "read",
+            "timestamp": "2025-10-31T06:20:19.666Z",
+            "order": 1
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339821
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339820
+            },
+            "action": "proc_tree_up",
+            "timestamp": "2025-10-31T06:20:19.666Z",
+            "order": null
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339820
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339821
+            },
+            "action": "proc_tree_down",
+            "timestamp": "2025-10-31T06:20:19.666Z",
+            "order": null
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339820
+            },
+            "action": "proc_tree_down",
+            "timestamp": null
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339820
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "proc_tree_up",
+            "timestamp": null
+          }
+        ]
+      },
+      "reports": {
+        "backward_dot": "reports/backward/backward_155.dot",
+        "forward_dot": "reports/forward/forward_155.dot"
+      }
+    }
+  ],
+  "total": 1
+}
