@@ -1,18 +1,13 @@
 digraph G {
-  "('file', '1058659')" [label="file\n1058659"];
-  "('proc', 339821)" [label="process\n339821\n/home/student/Downloads/program11"];
-  "('proc', 339820)" [label="process\n339820\n/home/student/Downloads/program11"];
-  "('file', '1058685')" [label="file\n1058685"];
-  "('proc', 339726)" [label="process\n339726\n/usr/bin/sudo"];
-  "('file', '278270')" [label="file\n278270"];
-  "('proc', 339796)" [label="process\n339796\n/usr/bin/curl"];
-  "('file', '277585')" [label="file\n277585"];
-  "('proc', 339821)" -> "('file', '1058659')" [label="read\n2025-10-31T06:20:19.666Z"];
-  "('proc', 339820)" -> "('proc', 339821)" [label="ppid\n2025-10-31T06:20:19.666Z"];
+  "('proc', 339821)" [label="process\npid: 339821\n/home/student/Downloads/program11"];
+  "('file', '1058659')" [label="secret.txt\ninode: 1058659"];
+  "('proc', 339820)" [label="process\npid: 339820\n/home/student/Downloads/program11"];
+  "('file', '1058685')" [label="program11\ninode: 1058685"];
+  "('proc', 339726)" [label="process\npid: 339726\n/usr/bin/sudo"];
+  "('file', '278270')" [label="sudo\ninode: 278270"];
+  "('file', '1058659')" -> "('proc', 339821)" [label="read\n2025-10-31T06:20:19.666Z"];
+  "('proc', 339820)" -> "('proc', 339821)" [label="fork\n2025-10-31T06:20:19.666Z"];
   "('file', '1058685')" -> "('proc', 339821)" [label="exec\n2025-10-31T06:20:19.666Z"];
-  "('proc', 339726)" -> "('proc', 339820)" [label="ppid\n2025-10-31T06:20:19.658Z"];
+  "('proc', 339726)" -> "('proc', 339820)" [label="fork\n2025-10-31T06:20:19.658Z"];
   "('file', '278270')" -> "('proc', 339820)" [label="exec\n2025-10-31T06:20:19.654Z"];
-  "('proc', 339796)" -> "('file', '1058685')" [label="read\n2025-10-31T06:20:19.450Z"];
-  "('proc', 339726)" -> "('proc', 339796)" [label="ppid\n2025-10-31T06:20:19.450Z"];
-  "('file', '277585')" -> "('proc', 339796)" [label="exec\n2025-10-31T06:20:19.438Z"];
 }

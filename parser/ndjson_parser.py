@@ -141,7 +141,7 @@ class NDJSONParser:
 
     def _emit_file_rw(self, ev: Dict, act: str) -> Iterator[Dict]:
         # read/open 视作进程访问文件内容；write 代表进程写入
-        edge = "process->file" if act in {"read", "open", "openat"} else "process->file"
+        edge = "file->process" if act in {"read", "open", "openat"} else "process->file"
         for p in self._paths(ev):
             yield self._attach_tags(ev, {
                 "timestamp": ev.get("@timestamp"),

@@ -33,18 +33,18 @@ def parse_args() -> argparse.Namespace:
 
 def choose_start_node(event: Dict[str, Any]) -> Optional[Tuple[str, Any]]:
     """Infer the best backtracker start node from a normalized event."""
-    inode = event.get("inode")
-    if inode:
-        return ("inode", str(inode))
+    pid = event.get("pid")
+    if pid is not None:
+        return ("pid", int(pid))
     socket = event.get("socket")
     if socket:
         addr = socket.get("dst_ip") or socket.get("src_ip")
         port = socket.get("dst_port") or socket.get("src_port")
         if addr and port:
             return ("socket", f"{addr}:{port}")
-    pid = event.get("pid")
-    if pid is not None:
-        return ("pid", int(pid))
+    inode = event.get("inode")
+    if inode:
+        return ("inode", str(inode))
     return None
 
 

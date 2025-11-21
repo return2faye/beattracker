@@ -1,9 +1,7 @@
 digraph G {
-  "('proc', 339821)" [label="process\n339821\n/home/student/Downloads/program11\n2025-10-31T06:20:19.666Z read /home/student/secret/secret.txt\n2025-10-31T06:20:19.666Z exec /home/student/Downloads/program11"];
-  "('file', '1058659')" [label="file\n1058659"];
-  "('proc', 339820)" [label="process\n339820\n/home/student/Downloads/program11"];
-  "('proc', 339726)" [label="process\n339726"];
-  "('proc', 339821)" -> "('file', '1058659')" [label="1. read\n2025-10-31T06:20:19.666Z"];
+  "('proc', 339821)" [label="process\npid: 339821\n/home/student/Downloads/program11\n2025-10-31T06:20:19.666Z read /home/student/secret/secret.txt\n2025-10-31T06:20:19.666Z exec /home/student/Downloads/program11"];
+  "('proc', 339820)" [label="process\npid: 339820\n/home/student/Downloads/program11"];
+  "('proc', 339726)" [label="process\npid: 339726"];
   "('proc', 339821)" -> "('proc', 339820)" [label="proc_tree_up\n2025-10-31T06:20:19.666Z"];
   "('proc', 339820)" -> "('proc', 339821)" [label="proc_tree_down\n2025-10-31T06:20:19.666Z"];
   "('proc', 339726)" -> "('proc', 339820)" [label="proc_tree_down"];

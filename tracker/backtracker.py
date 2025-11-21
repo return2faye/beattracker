@@ -1,5 +1,6 @@
 # parser/backtracker.py
 from collections import namedtuple
+from pathlib import Path
 from typing import Iterable, Dict, Optional, Tuple, Any, List, Set
 import datetime
 
@@ -141,7 +142,7 @@ class Backtracker:
         if ev.ppid is not None and proc_key:
             parent = ("proc", int(ev.ppid))
             if parent != proc_key:
-                edges.append((parent, proc_key, "ppid"))
+                edges.append((parent, proc_key, "fork"))
 
         return edges
 
@@ -272,15 +273,23 @@ class Backtracker:
         def node_label(node: Dict[str, Any]) -> str:
             ntype = node.get("type")
             if ntype == "proc":
-                label = f"process\\n{node.get('pid')}"
+                label = f"process\\npid: {node.get('pid')}"
                 if node.get("exe"):
                     label += f"\\n{node['exe']}"
                 if node.get("activity_label"):
                     label += f"\\n{node['activity_label']}"
                 return label
             if ntype == "file":
-                ident = node.get("inode") or node.get("path") or node.get("id")
-                return f"file\\n{ident}"
+                path = node.get("path")
+                inode = node.get("inode")
+                if path:
+                    base = Path(path).name or path
+                    label = base
+                    if inode:
+                        label += f"\\ninode: {inode}"
+                    return label
+                ident = inode or node.get("id")
+                return f"inode: {ident}"
             if ntype == "sock":
                 return f"socket\\n{node.get('addr') or node.get('id')}"
             return f"{ntype}\\n{node.get('id')}"
