@@ -1,16 +1,16 @@
 {
   "detections": [
     {
-      "index": 155,
+      "index": 235,
       "matched_tags": [
         "secret_read"
       ],
       "event": {
         "timestamp": "2025-10-31T06:20:19.666Z",
-        "action": "read",
         "pid": 339821,
         "ppid": 339820,
         "exe": "/home/student/Downloads/program11",
+        "action": "read",
         "file_path": "/home/student/secret/secret.txt",
         "inode": "1058659",
         "edge_dir": "file->process",
@@ -55,10 +55,85 @@
             "id": 339726
           },
           {
+            "type": "sock",
+            "addr": "127.0.0.53:53",
+            "src_ip": "127.0.0.53",
+            "src_port": "53",
+            "dst_ip": "127.0.0.53",
+            "dst_port": "53",
+            "id": "127.0.0.53:53"
+          },
+          {
+            "type": "proc",
+            "pid": 339442,
+            "exe": "/usr/bin/bash",
+            "id": 339442
+          },
+          {
             "type": "file",
             "inode": "278270",
             "path": "/usr/bin/sudo",
             "id": "278270"
+          },
+          {
+            "type": "proc",
+            "pid": 339818,
+            "exe": "/usr/bin/sudo",
+            "id": 339818
+          },
+          {
+            "type": "proc",
+            "pid": 339816,
+            "exe": "/usr/bin/sudo",
+            "id": 339816
+          },
+          {
+            "type": "proc",
+            "pid": 339814,
+            "exe": "/usr/bin/sudo",
+            "id": 339814
+          },
+          {
+            "type": "proc",
+            "pid": 339812,
+            "exe": "/usr/bin/sudo",
+            "id": 339812
+          },
+          {
+            "type": "proc",
+            "pid": 339810,
+            "exe": "/usr/bin/sudo",
+            "id": 339810
+          },
+          {
+            "type": "proc",
+            "pid": 339808,
+            "exe": "/usr/bin/sudo",
+            "id": 339808
+          },
+          {
+            "type": "proc",
+            "pid": 339806,
+            "exe": "/usr/bin/sudo",
+            "id": 339806
+          },
+          {
+            "type": "proc",
+            "pid": 339804,
+            "exe": "/usr/bin/sudo",
+            "id": 339804
+          },
+          {
+            "type": "proc",
+            "pid": 339802,
+            "exe": "/usr/bin/sudo",
+            "id": 339802
+          },
+          {
+            "type": "proc",
+            "pid": 339800,
+            "exe": "/usr/bin/sudo",
+            "id": 339800
           }
         ],
         "edges": [
@@ -112,6 +187,42 @@
           },
           {
             "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339820
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.658Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339820
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.658Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.654Z"
+          },
+          {
+            "src": {
               "type": "file",
               "id": "278270"
             },
@@ -121,60 +232,6 @@
             },
             "action": "exec",
             "timestamp": "2025-10-31T06:20:19.654Z"
-          }
-        ]
-      },
-      "forward_start": {
-        "type": "pid",
-        "id": 339821
-      },
-      "forward_trace": {
-        "nodes": [
-          {
-            "type": "proc",
-            "pid": 339821,
-            "exe": "/home/student/Downloads/program11",
-            "activity_label": "2025-10-31T06:20:19.666Z read /home/student/secret/secret.txt\\n2025-10-31T06:20:19.666Z exec /home/student/Downloads/program11",
-            "id": 339821
-          },
-          {
-            "type": "proc",
-            "pid": 339820,
-            "exe": "/home/student/Downloads/program11",
-            "id": 339820
-          },
-          {
-            "type": "proc",
-            "pid": 339726,
-            "id": 339726
-          }
-        ],
-        "edges": [
-          {
-            "src": {
-              "type": "proc",
-              "id": 339821
-            },
-            "dst": {
-              "type": "proc",
-              "id": 339820
-            },
-            "action": "proc_tree_up",
-            "timestamp": "2025-10-31T06:20:19.666Z",
-            "order": null
-          },
-          {
-            "src": {
-              "type": "proc",
-              "id": 339820
-            },
-            "dst": {
-              "type": "proc",
-              "id": 339821
-            },
-            "action": "proc_tree_down",
-            "timestamp": "2025-10-31T06:20:19.666Z",
-            "order": null
           },
           {
             "src": {
@@ -185,26 +242,973 @@
               "type": "proc",
               "id": 339820
             },
-            "action": "proc_tree_down",
-            "timestamp": null
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.654Z"
           },
           {
             "src": {
               "type": "proc",
-              "id": 339820
+              "id": 339818
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.642Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339818
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.642Z"
+          },
+          {
+            "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339818
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.642Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
             },
             "dst": {
               "type": "proc",
               "id": 339726
             },
-            "action": "proc_tree_up",
-            "timestamp": null
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.638Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339818
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.638Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339818
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.638Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339816
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.622Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339816
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.622Z"
+          },
+          {
+            "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339816
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.622Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.618Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339816
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.618Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339816
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.618Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339814
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.606Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339814
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.606Z"
+          },
+          {
+            "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339814
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.606Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.598Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339814
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.598Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339814
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.598Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339812
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.590Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339812
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.590Z"
+          },
+          {
+            "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339812
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.590Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.582Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339812
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.582Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339812
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.582Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339810
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.574Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339810
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.574Z"
+          },
+          {
+            "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339810
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.574Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339810
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.570Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339810
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.570Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.566Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339810
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.566Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339810
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.566Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339808
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.554Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339808
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.554Z"
+          },
+          {
+            "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339808
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.554Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.546Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339808
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.546Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339808
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.546Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339806
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.534Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339806
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.534Z"
+          },
+          {
+            "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339806
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.534Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.526Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339806
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.526Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339806
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.526Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339804
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.514Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339804
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.514Z"
+          },
+          {
+            "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339804
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.514Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.506Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339804
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.506Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339804
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.506Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339802
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.494Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339802
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.494Z"
+          },
+          {
+            "src": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339802
+            },
+            "action": "accept",
+            "timestamp": "2025-10-31T06:20:19.494Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.486Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339802
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.486Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339802
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.486Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339800
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.466Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339800
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.466Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339800
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.53:53"
+            },
+            "action": "connect",
+            "timestamp": "2025-10-31T06:20:19.462Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339800
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.462Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.458Z"
+          },
+          {
+            "src": {
+              "type": "file",
+              "id": "278270"
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339800
+            },
+            "action": "exec",
+            "timestamp": "2025-10-31T06:20:19.458Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339726
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339800
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.458Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.454Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.438Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.434Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.418Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.398Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.394Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.378Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.362Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.346Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.326Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.306Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.290Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.286Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.266Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.262Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.238Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 339442
+            },
+            "dst": {
+              "type": "proc",
+              "id": 339726
+            },
+            "action": "fork",
+            "timestamp": "2025-10-31T06:20:19.234Z"
           }
         ]
       },
       "reports": {
-        "backward_dot": "reports/backward/backward_155.dot",
-        "forward_dot": "reports/forward/forward_155.dot"
+        "backward_dot": "reports/backward/backward_235.dot"
       }
     }
   ],

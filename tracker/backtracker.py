@@ -1,27 +1,13 @@
-# parser/backtracker.py
+# tracker/backtracker.py
 from collections import namedtuple
 from pathlib import Path
 from typing import Iterable, Dict, Optional, Tuple, Any, List, Set
 import datetime
 
-# 依赖 NDJSONParser.parse() 的标准化事件结构:
-# {
-#   "timestamp": "...",
-#   "action": "read"/"exec"/...,
-#   "pid": int,
-#   "ppid": int | None,
-#   "exe": str | None,
-#   "file_path": str | None,
-#   "inode": str | None,
-#   "socket": {...} | None,
-#   "edge_dir": "process->file" / "file->process" / ...
-# }
-
 EventIdx = namedtuple(
     "EventIdx",
     ["eid", "ts", "action", "pid", "ppid", "exe", "file_path", "inode", "socket", "edge_dir", "raw"],
 )
-
 
 def parse_iso(ts: Optional[str]) -> Optional[datetime.datetime]:
     if ts is None:
@@ -33,13 +19,8 @@ def parse_iso(ts: Optional[str]) -> Optional[datetime.datetime]:
     except Exception:
         return None
 
-
 class Backtracker:
     def __init__(self, events: Iterable[Dict]):
-        """
-        events: iterable of NDJSONParser.parse() records.
-        将事件按时间逆序缓存，方便自后往前遍历。
-        """
         self.events: List[EventIdx] = []
         for eid, ev in enumerate(events):
             idx = EventIdx(
@@ -57,12 +38,11 @@ class Backtracker:
             )
             self.events.append(idx)
 
+        # Backtracker 需要时间倒序
         def sort_key(item: EventIdx):
-            # 更晚的事件排在前面；无时间的放最前避免丢失
             if item.ts is None:
                 return datetime.datetime.max.replace(tzinfo=datetime.timezone.utc)
             return item.ts
-
         self.events.sort(key=sort_key, reverse=True)
 
     # ---------- key helpers ----------
@@ -77,11 +57,14 @@ class Backtracker:
     @staticmethod
     def _socket_key(ev: EventIdx) -> Optional[Tuple[str, str]]:
         sock = ev.socket or {}
+        # 尝试归一化 socket key，避免 127.0.0.1 vs localhost 问题
         dst, dstp = sock.get("dst_ip"), sock.get("dst_port")
-        src, srcp = sock.get("src_ip"), sock.get("src_port")
         if dst and dstp:
             return ("sock", f"{dst}:{dstp}")
+        
+        src, srcp = sock.get("src_ip"), sock.get("src_port")
         if src and srcp:
+            # Server 端 accept 的 socket 通常看 local port
             return ("sock", f"{src}:{srcp}")
         return None
 
@@ -117,28 +100,31 @@ class Backtracker:
         else:
             node.setdefault("id", nid)
 
-    # ---------- event interpretation ----------
     def _edges_from_event(self, ev: EventIdx) -> List[Tuple[Tuple[str, Any], Tuple[str, Any], str]]:
         edges: List[Tuple[Tuple[str, Any], Tuple[str, Any], str]] = []
         timestamp_label = ev.action or ev.edge_dir or "event"
 
         file_key = self._file_key(ev)
         proc_key = ("proc", ev.pid) if ev.pid is not None else None
+        sock_key = self._socket_key(ev)
 
+        # Backtracker: 寻找 "Source" -> "Destination"
+        # 如果是 process->file (写), 这是一个由 process 产生 file 的动作。
+        # 在 backtracking 中，我们要找 file 的来源，所以 edge 方向保留 Source->Dest 即可，
+        # 算法会反向遍历。
+        
         if ev.edge_dir == "process->file" and proc_key and file_key:
             edges.append((proc_key, file_key, timestamp_label))
         elif ev.edge_dir == "file->process" and proc_key and file_key:
             edges.append((file_key, proc_key, timestamp_label))
-        elif ev.edge_dir == "process->socket" and proc_key:
-            sock_key = self._socket_key(ev)
-            if sock_key:
-                edges.append((proc_key, sock_key, timestamp_label))
-        elif ev.edge_dir == "socket->process" and proc_key:
-            sock_key = self._socket_key(ev)
-            if sock_key:
-                edges.append((sock_key, proc_key, timestamp_label))
+        elif ev.edge_dir == "process->socket" and proc_key and sock_key:
+            edges.append((proc_key, sock_key, timestamp_label))
+        elif ev.edge_dir == "socket->process" and proc_key and sock_key:
+            edges.append((sock_key, proc_key, timestamp_label))
 
-        # 父进程依赖
+        # Parent Process:
+        # Backtracking 时，如果当前是子进程，且有 ppid，我们需要连接 parent->child
+        # 这样算法才能沿着箭头反向找到 parent。
         if ev.ppid is not None and proc_key:
             parent = ("proc", int(ev.ppid))
             if parent != proc_key:
@@ -146,19 +132,6 @@ class Backtracker:
 
         return edges
 
-    @staticmethod
-    def _within_threshold(
-        event_time: Optional[datetime.datetime],
-        node_threshold: Optional[datetime.datetime],
-        time_cutoff: Optional[datetime.datetime],
-    ) -> bool:
-        if time_cutoff is not None and event_time is not None and event_time < time_cutoff:
-            return False
-        if node_threshold is not None and event_time is not None and event_time > node_threshold:
-            return False
-        return True
-
-    # ---------- public API ----------
     def backtrack(
         self,
         start_type: str,
@@ -175,156 +148,140 @@ class Backtracker:
         else:
             raise ValueError("start_type must be inode/pid/socket")
 
-        node_thresholds: Dict[Tuple[str, Any], Optional[datetime.datetime]] = {start_key: None}
+        # 算法核心：从 start_node 出发，沿着 edges 反向 (dst == current_node) 寻找 src
+        # 但由于数据结构存的是 List[Event]，我们遍历 Event，如果 Event 的 DST 是我们的关注点，
+        # 且时间符合，则将 Event 的 SRC 加入关注点。
+        
+        interesting_nodes: Set[Tuple[str, Any]] = {start_key}
         node_depths: Dict[Tuple[str, Any], int] = {start_key: 0}
+        
         nodes_meta: Dict[Tuple[str, Any], Dict[str, Any]] = {}
         edges_out: List[Dict[str, Any]] = []
         edges_seen: Set[Tuple[Tuple[str, Any], Tuple[str, Any], str]] = set()
 
         self._record_node_attrs(nodes_meta, start_key, None)
-
+        
+        # events 已经是倒序 (最新的在前面)
         for ev in self.events:
             event_time = ev.ts
             event_ts_str = ev.raw.get("timestamp")
 
+            # 获取该事件产生的所有边 (Src->Dst)
             for src, dst, label in self._edges_from_event(ev):
-                if dst not in node_thresholds:
-                    continue
-                if not self._within_threshold(event_time, node_thresholds[dst], time_cutoff):
-                    continue
+                # 如果边的终点是我们感兴趣的节点（意味着 src 是来源）
+                if dst in interesting_nodes:
+                    # 时间检查：来源事件必须发生在 cutoff 之前（或无限制）
+                    # Backtrack 越找越旧，所以 event_time 应该 <= cutoff (如果有的话)
+                    # 这里简化处理：只要在流中遇到，就认为相关，除非明确指定了 upper bound。
+                    
+                    current_depth = node_depths[dst]
+                    if current_depth >= max_hops:
+                        continue
+                        
+                    self._record_node_attrs(nodes_meta, dst, ev)
+                    self._record_node_attrs(nodes_meta, src, ev)
 
-                # 新节点深度限制
-                next_depth = node_depths[dst] + 1
-                if next_depth > max_hops:
-                    continue
-
-                self._record_node_attrs(nodes_meta, dst, ev)
-                self._record_node_attrs(nodes_meta, src, ev)
-
-                edge_key = (src, dst, label)
-                if edge_key not in edges_seen:
-                    edges_seen.add(edge_key)
-                    edges_out.append(
-                        {
+                    edge_key = (src, dst, label, event_ts_str) 
+                    if edge_key not in edges_seen:
+                        edges_seen.add(edge_key)
+                        edges_out.append({
                             "src": {"type": src[0], "id": src[1]},
                             "dst": {"type": dst[0], "id": dst[1]},
                             "action": label,
-                            "timestamp": event_ts_str,
-                        }
-                    )
+                            "timestamp": event_ts_str
+                        })
+                    
+                    # 将源加入感兴趣列表
+                    if src not in interesting_nodes:
+                        interesting_nodes.add(src)
+                        node_depths[src] = current_depth + 1
 
-                # 更新 source 节点阈值与深度
-                current_threshold = node_thresholds.get(src)
-                new_threshold = event_time
-                if new_threshold is None:
-                    node_thresholds[src] = None
-                elif current_threshold is None or new_threshold < current_threshold:
-                    node_thresholds[src] = new_threshold
+        return self._format_output(nodes_meta, edges_out)
 
-                existing_depth = node_depths.get(src)
-                if existing_depth is None or next_depth < existing_depth:
-                    node_depths[src] = next_depth
-
-        # 组装结果
-        nodes_out: List[Dict[str, Any]] = []
+    def _format_output(self, nodes_meta, edges_out):
+        nodes_out = []
         for node_key, attrs in nodes_meta.items():
             ntype = attrs["type"]
-            node_entry: Dict[str, Any] = {"type": ntype}
-            if ntype == "proc":
-                node_entry["pid"] = attrs.get("pid")
-                if attrs.get("exe"):
-                    node_entry["exe"] = attrs["exe"]
-            elif ntype == "file":
-                if attrs.get("inode"):
-                    node_entry["inode"] = attrs["inode"]
-                if attrs.get("path"):
-                    node_entry["path"] = attrs["path"]
-            elif ntype == "sock":
-                node_entry["addr"] = attrs.get("addr")
-                for key in ("src_ip", "src_port", "dst_ip", "dst_port"):
-                    if attrs.get(key) is not None:
-                        node_entry[key] = attrs[key]
-            node_entry.setdefault(
-                "id",
-                attrs.get("inode")
-                or attrs.get("path")
-                or attrs.get("addr")
-                or attrs.get("pid")
-                or str(node_key[1]),
+            node_entry = {"type": ntype}
+            # Copy attributes
+            for k, v in attrs.items():
+                if k != "type": 
+                    node_entry[k] = v
+            
+            # Ensure ID
+            node_entry.setdefault("id", 
+                attrs.get("inode") or attrs.get("path") or attrs.get("addr") or attrs.get("pid") or str(node_key[1])
             )
             nodes_out.append(node_entry)
-
         return {"nodes": nodes_out, "edges": edges_out}
 
-    # ---------- export ----------
+    # ---------- export (COLOR CODED) ----------
     @staticmethod
     def export_dot(traced: Dict[str, List[Dict[str, Any]]]) -> str:
-        def node_key(node: Dict[str, Any]) -> str:
-            ntype = node.get("type")
-            ident = node.get("id")
-            if ntype == "proc":
-                return f"('proc', {ident})"
-            if ntype == "file":
-                return f"('file', '{ident}')"
-            if ntype == "sock":
-                return f"('sock', '{ident}')"
-            return f"('node', '{ident}')"
+        def node_id(node):
+            return f"{node.get('type')}_{node.get('id')}"
 
-        def node_label(node: Dict[str, Any]) -> str:
+        lines = ["digraph G {", "  rankdir=TB;", "  node [fontname=\"Helvetica\"];", "  edge [fontname=\"Helvetica\", fontsize=10];"]
+        
+        for node in traced.get("nodes", []):
             ntype = node.get("type")
+            label = f"{ntype}\\n{node.get('id')}"
+            
+            # --- Visualization Styling ---
+            shape = "ellipse"
+            color = "black"
+            fill = "white"
+            
             if ntype == "proc":
-                label = f"process\\npid: {node.get('pid')}"
-                if node.get("exe"):
-                    label += f"\\n{node['exe']}"
+                shape = "ellipse"
+                fill = "#E1BEE7" # Purple 100
+                color = "#4A148C"
+                exe = node.get("exe")
+                if exe:
+                    label += f"\\n{Path(exe).name}"
+                # Forward tracker extra info
                 if node.get("activity_label"):
                     label += f"\\n{node['activity_label']}"
-                return label
-            if ntype == "file":
+
+            elif ntype == "file":
+                shape = "box"
+                fill = "#B3E5FC" # Light Blue
+                color = "#01579B"
                 path = node.get("path")
-                inode = node.get("inode")
                 if path:
-                    base = Path(path).name or path
-                    label = base
-                    if inode:
-                        label += f"\\ninode: {inode}"
-                    return label
-                ident = inode or node.get("id")
-                return f"inode: {ident}"
-            if ntype == "sock":
-                return f"socket\\n{node.get('addr') or node.get('id')}"
-            return f"{ntype}\\n{node.get('id')}"
+                    label = f"File\\n{Path(path).name}"
+                    if node.get("inode"):
+                        label += f"\\n(i:{node['inode']})"
+                
+            elif ntype == "sock":
+                shape = "diamond"
+                fill = "#FFE0B2" # Orange
+                color = "#E65100"
+                label = f"Socket\\n{node.get('addr')}"
 
-        def edge_key(endpoint: Dict[str, Any]) -> str:
-            ntype = endpoint.get("type")
-            ident = endpoint.get("id")
-            if ntype == "proc":
-                return f"('proc', {ident})"
-            if ntype == "file":
-                return f"('file', '{ident}')"
-            if ntype == "sock":
-                return f"('sock', '{ident}')"
-            return f"('node', '{ident}')"
+            lines.append(f'  "{node_id(node)}" [label="{label}", shape={shape}, style="filled", fillcolor="{fill}", color="{color}"];')
 
-        lines = ["digraph G {"]
-        for node in traced.get("nodes", []):
-            label = node_label(node).replace('"', r'\"')
-            lines.append(f'  "{node_key(node)}" [label="{label}"];')
-
-        for edge in traced.get("edges", []):
-            src = edge_key(edge.get("src", {}))
-            dst = edge_key(edge.get("dst", {}))
-            action = edge.get("action") or ""
+        for i, edge in enumerate(traced.get("edges", [])):
+            src_id = node_id(edge["src"])
+            dst_id = node_id(edge["dst"])
+            
+            action = edge.get("action", "event")
+            ts = edge.get("timestamp", "")
             order = edge.get("order")
-            ts = edge.get("timestamp") or ""
-            if action and ts:
-                label = f"{action}\\n{ts}"
-            else:
-                label = action or ts
-            if order is not None:
-                prefix = f"{order}. "
-                label = f"{prefix}{label}" if label else prefix.rstrip()
-            label = (label or "").replace('"', r'\"')
-            lines.append(f'  "{src}" -> "{dst}" [label="{label}"];')
+            
+            label = f"{action}"
+            if ts:
+                # 简化时间显示，只显示时分秒
+                try:
+                    t_obj = datetime.datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                    label += f"\\n{t_obj.strftime('%H:%M:%S')}"
+                except:
+                    pass
+            
+            if order:
+                label = f"[{order}] " + label
+            
+            lines.append(f'  "{src_id}" -> "{dst_id}" [label="{label}"];')
 
         lines.append("}")
         return "\n".join(lines)
