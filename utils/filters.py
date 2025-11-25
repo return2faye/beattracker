@@ -22,6 +22,10 @@ IGNORED_BINARIES = {
     "/bin/sudo",
     "/usr/bin/bash",
     "/bin/bash",
+    "/usr/bin/curl",
+    "/usr/bin/chmod",
+    "/usr/bin/touch",
+    "/usr/bin/rm",
 }
 
 # Ports to ignore (0=interface check, 53=DNS)
@@ -32,6 +36,8 @@ IGNORED_EXACT_PATHS = {
     "/home/attacker",
     "/home/attacker/",
     "/home/student/proj_tools",
+    "/home/student/Downloads",
+    "/home/student/Downloads/",
 }
 
 

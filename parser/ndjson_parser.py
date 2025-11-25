@@ -24,31 +24,39 @@ class NDJSONParser:
                     continue
 
     def _canon_action(self, ev: Dict) -> Optional[str]:
-        # 简化版 action 提取
-        act = ev.get("auditd", {}).get("data", {}).get("syscall") or \
-              ev.get("event", {}).get("action") or \
-              ev.get("auditd", {}).get("summary", {}).get("action")
-        
-        if isinstance(act, list): act = act[0]
-        if not act: return None
-        
+        act = (
+            ev.get("auditd", {}).get("data", {}).get("syscall")
+            or ev.get("event", {}).get("action")
+            or ev.get("auditd", {}).get("summary", {}).get("action")
+        )
+        if isinstance(act, list):
+            act = act[0]
+        if not act:
+            return None
+
         act = str(act).lower()
         alias = {"execve": "exec", "execveat": "exec", "openat": "open", "accept4": "accept"}
         act = alias.get(act, act)
 
-        # define speficic tags handler here
         tags = ev.get("tags", [])
-        if "attacker_write" in tags:
+        if any(t in tags for t in ["attacker_write", "attacker_attr", "dl_dir"]):
             return "file_write"
-        
-        # 归类
-        if act == "exec": return "exec"
-        if act in {"open", "read", "mmap"}: return "file_read"
-        if act == "write": return "file_write"
-        if act in {"connect", "sendto", "sendmsg"}: return "net_out"
-        if act in {"accept", "recvfrom"}: return "net_in"
-        if act in {"fork", "vfork", "clone"}: return "fork"
-        
+        if "attacker_read" in tags:
+            return "file_read"
+
+        if act == "exec":
+            return "exec"
+        if act in {"open", "read", "mmap"}:
+            return "file_read"
+        if act == "write":
+            return "file_write"
+        if act in {"connect", "sendto", "sendmsg"}:
+            return "net_out"
+        if act in {"accept", "recvfrom"}:
+            return "net_in"
+        if act in {"fork", "vfork", "clone"}:
+            return "fork"
+
         return None
 
     def _paths(self, ev: Dict) -> List[Dict]:

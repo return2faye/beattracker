@@ -8,13 +8,23 @@ digraph G {
   "file_1058699" [label="File\n/home/student/Downloads/program11\n(i:1058699)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
   "proc_395464" [label="proc\n395464\nsudo", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
   "proc_395097" [label="proc\n395097\nbash", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
+  "proc_395502" [label="proc\n395502\nchmod", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
+  "proc_395500" [label="proc\n395500\ncurl", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
   "proc_395074" [label="proc\n395074\nbash", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
   "file_1058700" [label="File\n/home/attacker/output.txt\n(i:1058700)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
+  "sock_127.0.0.1:8080" [label="Socket\n127.0.0.1:8080", shape=diamond, style="filled", fillcolor="#FFE0B2", color="#E65100"];
+  "sock_::1:8080" [label="Socket\n::1:8080", shape=diamond, style="filled", fillcolor="#FFE0B2", color="#E65100"];
   "file_1058659" -> "proc_395525" [label="read\n13:55:58"];
   "proc_395524" -> "proc_395525" [label="fork (x4)\n13:55:58"];
   "file_1058699" -> "proc_395525" [label="exec\n13:55:58"];
   "proc_395464" -> "proc_395524" [label="fork (x8)\n13:55:58"];
   "proc_395097" -> "proc_395464" [label="fork (x37)\n13:55:58"];
+  "proc_395502" -> "file_1058699" [label="write (x2)\n13:55:58"];
+  "proc_395464" -> "proc_395502" [label="fork (x2)\n13:55:58"];
+  "proc_395500" -> "file_1058699" [label="write (x2)\n13:55:58"];
+  "proc_395464" -> "proc_395500" [label="fork (x7)\n13:55:58"];
   "proc_395074" -> "proc_395097" [label="fork\n13:55:58"];
   "proc_395525" -> "file_1058700" [label="write\n13:55:58"];
+  "proc_395500" -> "sock_127.0.0.1:8080" [label="connect (x2)\n13:55:58"];
+  "proc_395500" -> "sock_::1:8080" [label="connect (x2)\n13:55:58"];
 }

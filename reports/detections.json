@@ -1,7 +1,7 @@
 {
   "detections": [
     {
-      "index": 274,
+      "index": 285,
       "matched_tags": [
         "secret_read"
       ],
@@ -62,6 +62,18 @@
           },
           {
             "type": "proc",
+            "pid": 395502,
+            "exe": "/usr/bin/chmod",
+            "id": 395502
+          },
+          {
+            "type": "proc",
+            "pid": 395500,
+            "exe": "/usr/bin/curl",
+            "id": 395500
+          },
+          {
+            "type": "proc",
             "pid": 395074,
             "exe": "/usr/bin/bash",
             "id": 395074
@@ -71,6 +83,20 @@
             "inode": "1058700",
             "path": "/home/attacker/output.txt",
             "id": "1058700"
+          },
+          {
+            "type": "sock",
+            "addr": "127.0.0.1:8080",
+            "dst_ip": "127.0.0.1",
+            "dst_port": "8080",
+            "id": "127.0.0.1:8080"
+          },
+          {
+            "type": "sock",
+            "addr": "::1:8080",
+            "dst_ip": "::1",
+            "dst_port": "8080",
+            "id": "::1:8080"
           }
         ],
         "edges": [
@@ -137,6 +163,54 @@
           {
             "src": {
               "type": "proc",
+              "id": 395502
+            },
+            "dst": {
+              "type": "file",
+              "id": "1058699"
+            },
+            "action": "write (x2)",
+            "timestamp": "2025-11-25T13:55:58.798Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 395464
+            },
+            "dst": {
+              "type": "proc",
+              "id": 395502
+            },
+            "action": "fork (x2)",
+            "timestamp": "2025-11-25T13:55:58.798Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 395500
+            },
+            "dst": {
+              "type": "file",
+              "id": "1058699"
+            },
+            "action": "write (x2)",
+            "timestamp": "2025-11-25T13:55:58.794Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 395464
+            },
+            "dst": {
+              "type": "proc",
+              "id": 395500
+            },
+            "action": "fork (x7)",
+            "timestamp": "2025-11-25T13:55:58.794Z"
+          },
+          {
+            "src": {
+              "type": "proc",
               "id": 395074
             },
             "dst": {
@@ -157,11 +231,35 @@
             },
             "action": "write",
             "timestamp": "2025-11-25T13:55:58.958Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 395500
+            },
+            "dst": {
+              "type": "sock",
+              "id": "127.0.0.1:8080"
+            },
+            "action": "connect (x2)",
+            "timestamp": "2025-11-25T13:55:58.790Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 395500
+            },
+            "dst": {
+              "type": "sock",
+              "id": "::1:8080"
+            },
+            "action": "connect (x2)",
+            "timestamp": "2025-11-25T13:55:58.790Z"
           }
         ]
       },
       "reports": {
-        "backward_dot": "reports/backward/backward_274.dot"
+        "backward_dot": "reports/backward/backward_285.dot"
       }
     }
   ],
