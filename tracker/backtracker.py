@@ -175,8 +175,12 @@ class Backtracker:
             for src, dst, label in self._edges_from_event(ev):
                 # 如果边的终点是我们感兴趣的节点（意味着 src 是来源）
                 if dst in interesting_nodes:
-                    if src[0] == "file" and is_noise_file(str(src[1])):
-                        continue
+                    if src[0] == "file":
+                        path_to_check = ev.file_path
+                        if not path_to_check and ev.exe:
+                            path_to_check = ev.exe
+                        if path_to_check and is_noise_file(path_to_check):
+                            continue
                     if src[0] == "sock" and is_noise_socket(str(src[1])):
                         continue
                     if dst[0] == "file" and is_noise_file(str(dst[1])):

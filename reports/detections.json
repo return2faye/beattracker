@@ -55,12 +55,6 @@
             "id": 395464
           },
           {
-            "type": "file",
-            "inode": "278270",
-            "path": "/usr/bin/sudo",
-            "id": "278270"
-          },
-          {
             "type": "proc",
             "pid": 395097,
             "exe": "/usr/bin/bash",
@@ -127,18 +121,6 @@
             },
             "action": "fork (x8)",
             "timestamp": "2025-11-25T13:55:58.954Z"
-          },
-          {
-            "src": {
-              "type": "file",
-              "id": "278270"
-            },
-            "dst": {
-              "type": "proc",
-              "id": 395524
-            },
-            "action": "exec",
-            "timestamp": "2025-11-25T13:55:58.946Z"
           },
           {
             "src": {
