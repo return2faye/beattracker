@@ -12,7 +12,7 @@ from reporter import DetectionReporter
 from tracker import Backtracker
 from utils.tag_pool import TagPool
 
-DEFAULT_LOG_FILE = "logs/auditbeat-20251031.ndjson"
+DEFAULT_LOG_FILE = "logs/auditbeat-20251125.ndjson"
 DEFAULT_TAG_POOL = "config/tag_pool.json"
 DEFAULT_REPORT_DIR = Path("reports")
 DEFAULT_MAX_HOPS = 5

@@ -1,5 +1,7 @@
 """Filter utilities for graph pruning."""
 
+from pathlib import Path
+
 IGNORED_PREFIXES = (
     "/lib/",
     "/usr/lib/",
@@ -12,9 +14,9 @@ IGNORED_PREFIXES = (
     "/run/",
     "/var/lib/",
     "/snap/",
+    "/tmp/go-build",
 )
 
-# Specific binaries that create high-degree nodes but add little forensic value
 IGNORED_BINARIES = {
     "/usr/bin/sudo",
     "/bin/sudo",
@@ -22,26 +24,51 @@ IGNORED_BINARIES = {
     "/bin/bash",
 }
 
-IGNORED_PORTS = {53, 5353}
+# Ports to ignore (0=interface check, 53=DNS)
+IGNORED_PORTS = {0, 53, 5353}
+
+# Exact paths to ignore (usually directories that show up as write targets)
+IGNORED_EXACT_PATHS = {
+    "/home/attacker",
+    "/home/attacker/",
+    "/home/student/proj_tools",
+}
 
 
 def is_noise_file(path: str) -> bool:
     """Check if a file path is system noise."""
     if not path:
         return True
+
+    # 1. Exact matches (directories etc.)
+    if path.rstrip("/") in IGNORED_EXACT_PATHS:
+        return True
+
+    # 2. Known binaries
     if path in IGNORED_BINARIES:
         return True
+
+    # 3. Prefixes
     return path.startswith(IGNORED_PREFIXES)
 
 
 def is_noise_socket(addr_str: str) -> bool:
-    """Check if a socket address (IP:Port) is noise (e.g., DNS)."""
+    """Check if a socket address (IP:Port) is noise."""
     if not addr_str:
         return False
-    if ":53" in addr_str or addr_str.endswith(":5353"):
-        return True
+
+    if ":" in addr_str:
+        try:
+            port_str = addr_str.split(":")[-1]
+            if port_str.isdigit():
+                port = int(port_str)
+                if port in IGNORED_PORTS:
+                    return True
+        except ValueError:
+            pass
+
     if "127.0.0.53" in addr_str:
         return True
-    return False
 
+    return False
 

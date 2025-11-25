@@ -35,6 +35,11 @@ class NDJSONParser:
         act = str(act).lower()
         alias = {"execve": "exec", "execveat": "exec", "openat": "open", "accept4": "accept"}
         act = alias.get(act, act)
+
+        # define speficic tags handler here
+        tags = ev.get("tags", [])
+        if "attacker_write" in tags:
+            return "file_write"
         
         # 归类
         if act == "exec": return "exec"

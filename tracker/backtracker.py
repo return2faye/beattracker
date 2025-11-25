@@ -212,6 +212,80 @@ class Backtracker:
                         interesting_nodes.add(src)
                         node_depths[src] = current_depth + 1
 
+        # =================================================================
+        # PHASE 2: Egress Enrichment (Forward Scan for Net & File Writes)
+        # =================================================================
+        ignore_egress_exes = {"/usr/bin/sudo", "/bin/sudo", "/usr/bin/bash", "/bin/bash"}
+        
+        suspicious_pids = {
+            attrs.get("pid")
+            for key, attrs in nodes_meta.items()
+            if key[0] == "proc" 
+            and attrs.get("pid") is not None
+            and attrs.get("exe") not in ignore_egress_exes # <--- 关键过滤
+        }
+
+        print(nodes_meta)   
+        suspicious_pids = {
+            attrs.get("pid")
+            for key, attrs in nodes_meta.items()
+            if key[0] == "proc" and attrs.get("pid") is not None
+        }
+
+        for ev in self.events:
+            if ev.pid in suspicious_pids:
+                proc_key = ("proc", ev.pid)
+
+                # Case A: Network Connection (Process -> Socket)
+                if ev.edge_dir == "process->socket" or ev.action == "connect":
+                    sock_key = self._socket_key(ev)
+                    if not sock_key:
+                        continue
+                    if is_noise_socket(str(sock_key[1])):
+                        continue
+
+                    self._record_node_attrs(nodes_meta, sock_key, ev)
+
+                    label = ev.action or "connect"
+                    agg_key = (proc_key, sock_key, label)
+                    info = edge_map.get(agg_key)
+                    if not info:
+                        info = {
+                            "src": proc_key,
+                            "dst": sock_key,
+                            "action": label,
+                            "timestamp": ev.raw.get("timestamp"),
+                            "count": 0,
+                        }
+                        edge_map[agg_key] = info
+                    info["count"] += 1
+
+                # Case B: File Write (Process -> File)
+                elif ev.edge_dir == "process->file":
+                    file_key = self._file_key(ev)
+                    if not file_key:
+                        continue
+                    if ev.file_path and is_noise_file(ev.file_path):
+                        continue
+
+                    self._record_node_attrs(nodes_meta, file_key, ev)
+
+                    label = ev.action or "write"
+                    agg_key = (proc_key, file_key, label)
+                    info = edge_map.get(agg_key)
+                    if not info:
+                        info = {
+                            "src": proc_key,
+                            "dst": file_key,
+                            "action": label,
+                            "timestamp": ev.raw.get("timestamp"),
+                            "count": 0,
+                        }
+                        edge_map[agg_key] = info
+                    info["count"] += 1
+
+        # =================================================================
+
         for info in edge_map.values():
             action_label = info["action"]
             if info["count"] > 1:

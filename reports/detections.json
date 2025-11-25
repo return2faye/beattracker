@@ -1,14 +1,14 @@
 {
   "detections": [
     {
-      "index": 235,
+      "index": 274,
       "matched_tags": [
         "secret_read"
       ],
       "event": {
-        "timestamp": "2025-10-31T06:20:19.666Z",
-        "pid": 339821,
-        "ppid": 339820,
+        "timestamp": "2025-11-25T13:55:58.958Z",
+        "pid": 395525,
+        "ppid": 395524,
         "exe": "/home/student/Downloads/program11",
         "action": "read",
         "file_path": "/home/student/secret/secret.txt",
@@ -20,15 +20,15 @@
       },
       "backtrack_start": {
         "type": "pid",
-        "id": 339821
+        "id": 395525
       },
       "trace": {
         "nodes": [
           {
             "type": "proc",
-            "pid": 339821,
+            "pid": 395525,
             "exe": "/home/student/Downloads/program11",
-            "id": 339821
+            "id": 395525
           },
           {
             "type": "file",
@@ -38,33 +38,45 @@
           },
           {
             "type": "proc",
-            "pid": 339820,
+            "pid": 395524,
             "exe": "/home/student/Downloads/program11",
-            "id": 339820
+            "id": 395524
           },
           {
             "type": "file",
-            "inode": "1058685",
+            "inode": "1058699",
             "path": "/home/student/Downloads/program11",
-            "id": "1058685"
+            "id": "1058699"
           },
           {
             "type": "proc",
-            "pid": 339726,
+            "pid": 395464,
             "exe": "/usr/bin/sudo",
-            "id": 339726
-          },
-          {
-            "type": "proc",
-            "pid": 339442,
-            "exe": "/usr/bin/bash",
-            "id": 339442
+            "id": 395464
           },
           {
             "type": "file",
             "inode": "278270",
             "path": "/usr/bin/sudo",
             "id": "278270"
+          },
+          {
+            "type": "proc",
+            "pid": 395097,
+            "exe": "/usr/bin/bash",
+            "id": 395097
+          },
+          {
+            "type": "proc",
+            "pid": 395074,
+            "exe": "/usr/bin/bash",
+            "id": 395074
+          },
+          {
+            "type": "file",
+            "inode": "1058700",
+            "path": "/home/attacker/output.txt",
+            "id": "1058700"
           }
         ],
         "edges": [
@@ -75,58 +87,46 @@
             },
             "dst": {
               "type": "proc",
-              "id": 339821
+              "id": 395525
             },
             "action": "read",
-            "timestamp": "2025-10-31T06:20:19.666Z"
+            "timestamp": "2025-11-25T13:55:58.958Z"
           },
           {
             "src": {
               "type": "proc",
-              "id": 339820
+              "id": 395524
             },
             "dst": {
               "type": "proc",
-              "id": 339821
+              "id": 395525
             },
-            "action": "fork (x2)",
-            "timestamp": "2025-10-31T06:20:19.666Z"
+            "action": "fork (x4)",
+            "timestamp": "2025-11-25T13:55:58.958Z"
           },
           {
             "src": {
               "type": "file",
-              "id": "1058685"
+              "id": "1058699"
             },
             "dst": {
               "type": "proc",
-              "id": 339821
+              "id": 395525
             },
             "action": "exec",
-            "timestamp": "2025-10-31T06:20:19.666Z"
+            "timestamp": "2025-11-25T13:55:58.958Z"
           },
           {
             "src": {
               "type": "proc",
-              "id": 339726
+              "id": 395464
             },
             "dst": {
               "type": "proc",
-              "id": 339820
+              "id": 395524
             },
-            "action": "fork (x7)",
-            "timestamp": "2025-10-31T06:20:19.658Z"
-          },
-          {
-            "src": {
-              "type": "proc",
-              "id": 339442
-            },
-            "dst": {
-              "type": "proc",
-              "id": 339726
-            },
-            "action": "fork (x35)",
-            "timestamp": "2025-10-31T06:20:19.654Z"
+            "action": "fork (x8)",
+            "timestamp": "2025-11-25T13:55:58.954Z"
           },
           {
             "src": {
@@ -135,15 +135,51 @@
             },
             "dst": {
               "type": "proc",
-              "id": 339820
+              "id": 395524
             },
             "action": "exec",
-            "timestamp": "2025-10-31T06:20:19.654Z"
+            "timestamp": "2025-11-25T13:55:58.946Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 395097
+            },
+            "dst": {
+              "type": "proc",
+              "id": 395464
+            },
+            "action": "fork (x37)",
+            "timestamp": "2025-11-25T13:55:58.942Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 395074
+            },
+            "dst": {
+              "type": "proc",
+              "id": 395097
+            },
+            "action": "fork",
+            "timestamp": "2025-11-25T13:55:58.514Z"
+          },
+          {
+            "src": {
+              "type": "proc",
+              "id": 395525
+            },
+            "dst": {
+              "type": "file",
+              "id": "1058700"
+            },
+            "action": "write",
+            "timestamp": "2025-11-25T13:55:58.958Z"
           }
         ]
       },
       "reports": {
-        "backward_dot": "reports/backward/backward_235.dot"
+        "backward_dot": "reports/backward/backward_274.dot"
       }
     }
   ],
