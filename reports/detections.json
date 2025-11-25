@@ -258,6 +258,24 @@
           }
         ]
       },
+      "patterns": [
+        {
+          "pattern": "Drop & Execute",
+          "details": {
+            "downloader": "/usr/bin/curl",
+            "file": "/home/student/Downloads/program11",
+            "malware": "/home/student/Downloads/program11"
+          }
+        },
+        {
+          "pattern": "Drop & Execute",
+          "details": {
+            "downloader": "/usr/bin/chmod",
+            "file": "/home/student/Downloads/program11",
+            "malware": "/home/student/Downloads/program11"
+          }
+        }
+      ],
       "reports": {
         "backward_dot": "reports/backward/backward_285.dot"
       }

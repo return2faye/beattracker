@@ -9,7 +9,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from parser import NDJSONParser
 from reporter import DetectionReporter
-from tracker import Backtracker
+from tracker import Backtracker, PatternDetector
 from utils.tag_pool import TagPool
 
 DEFAULT_LOG_FILE = "logs/auditbeat-20251125.ndjson"
@@ -100,6 +100,30 @@ def main() -> None:
 
     detections = detect_suspicious_events(events, tag_pool)
     run_backtracker(events, detections, max_hops=DEFAULT_MAX_HOPS)
+
+    pattern_detector = PatternDetector()
+    print("\n[Running Advanced Pattern Detection]...")
+    for det in detections:
+        trace = det.get("trace")
+        if not trace:
+            continue
+        patterns = pattern_detector.detect(trace)
+        if patterns:
+            det["patterns"] = patterns
+            print(
+                f"  [!] Detection #{det['index']}: "
+                f"Found {len(patterns)} attack pattern(s)!"
+            )
+            for p in patterns:
+                details = p.get("details", {})
+                print(
+                    "      - "
+                    f"{p.get('pattern')}: "
+                    f"{details.get('downloader')} -> "
+                    f"{details.get('file')} -> "
+                    f"{details.get('malware')}"
+                )
+
     reporter = DetectionReporter(DEFAULT_REPORT_DIR)
     reporter.emit_dot_reports(detections, trace_key="trace", kind="backward")
 
