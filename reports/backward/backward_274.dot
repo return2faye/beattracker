@@ -3,14 +3,14 @@ digraph G {
   node [fontname="Helvetica"];
   edge [fontname="Helvetica", fontsize=10];
   "proc_395525" [label="proc\n395525\nprogram11", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
-  "file_1058659" [label="File\nsecret.txt\n(i:1058659)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
+  "file_1058659" [label="File\n/home/student/secret/secret.txt\n(i:1058659)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
   "proc_395524" [label="proc\n395524\nprogram11", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
-  "file_1058699" [label="File\nprogram11\n(i:1058699)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
+  "file_1058699" [label="File\n/home/student/Downloads/program11\n(i:1058699)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
   "proc_395464" [label="proc\n395464\nsudo", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
-  "file_278270" [label="File\nsudo\n(i:278270)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
+  "file_278270" [label="File\n/usr/bin/sudo\n(i:278270)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
   "proc_395097" [label="proc\n395097\nbash", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
   "proc_395074" [label="proc\n395074\nbash", shape=ellipse, style="filled", fillcolor="#E1BEE7", color="#4A148C"];
-  "file_1058700" [label="File\noutput.txt\n(i:1058700)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
+  "file_1058700" [label="File\n/home/attacker/output.txt\n(i:1058700)", shape=box, style="filled", fillcolor="#B3E5FC", color="#01579B"];
   "file_1058659" -> "proc_395525" [label="read\n13:55:58"];
   "proc_395524" -> "proc_395525" [label="fork (x4)\n13:55:58"];
   "file_1058699" -> "proc_395525" [label="exec\n13:55:58"];

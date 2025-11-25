@@ -352,7 +352,7 @@ class Backtracker:
                 color = "#01579B"
                 path = node.get("path")
                 if path:
-                    label = f"File\\n{Path(path).name}"
+                    label = f"File\\n{path}"
                     if node.get("inode"):
                         label += f"\\n(i:{node['inode']})"
                 
