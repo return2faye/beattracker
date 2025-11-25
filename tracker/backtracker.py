@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Iterable, Dict, Optional, Tuple, Any, List, Set
 import datetime
 
+from utils.filters import is_noise_file
+
 EventIdx = namedtuple(
     "EventIdx",
     ["eid", "ts", "action", "pid", "ppid", "exe", "file_path", "inode", "socket", "edge_dir", "raw"],
@@ -170,6 +172,8 @@ class Backtracker:
             for src, dst, label in self._edges_from_event(ev):
                 # 如果边的终点是我们感兴趣的节点（意味着 src 是来源）
                 if dst in interesting_nodes:
+                    if src[0] == "file" and is_noise_file(str(src[1])):
+                        continue
                     # 时间检查：来源事件必须发生在 cutoff 之前（或无限制）
                     # Backtrack 越找越旧，所以 event_time 应该 <= cutoff (如果有的话)
                     # 这里简化处理：只要在流中遇到，就认为相关，除非明确指定了 upper bound。
