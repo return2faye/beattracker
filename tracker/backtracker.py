@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Iterable, Dict, Optional, Tuple, Any, List, Set
 import datetime
 
-from utils.filters import is_noise_file
+from utils.filters import is_noise_file, is_noise_socket
 
 EventIdx = namedtuple(
     "EventIdx",
@@ -159,7 +159,10 @@ class Backtracker:
         
         nodes_meta: Dict[Tuple[str, Any], Dict[str, Any]] = {}
         edges_out: List[Dict[str, Any]] = []
-        edges_seen: Set[Tuple[Tuple[str, Any], Tuple[str, Any], str]] = set()
+        edge_map: Dict[
+            Tuple[Tuple[str, Any], Tuple[str, Any], str],
+            Dict[str, Any],
+        ] = {}
 
         self._record_node_attrs(nodes_meta, start_key, None)
         
@@ -174,6 +177,12 @@ class Backtracker:
                 if dst in interesting_nodes:
                     if src[0] == "file" and is_noise_file(str(src[1])):
                         continue
+                    if src[0] == "sock" and is_noise_socket(str(src[1])):
+                        continue
+                    if dst[0] == "file" and is_noise_file(str(dst[1])):
+                        continue
+                    if dst[0] == "sock" and is_noise_socket(str(dst[1])):
+                        continue
                     # 时间检查：来源事件必须发生在 cutoff 之前（或无限制）
                     # Backtrack 越找越旧，所以 event_time 应该 <= cutoff (如果有的话)
                     # 这里简化处理：只要在流中遇到，就认为相关，除非明确指定了 upper bound。
@@ -185,20 +194,36 @@ class Backtracker:
                     self._record_node_attrs(nodes_meta, dst, ev)
                     self._record_node_attrs(nodes_meta, src, ev)
 
-                    edge_key = (src, dst, label, event_ts_str) 
-                    if edge_key not in edges_seen:
-                        edges_seen.add(edge_key)
-                        edges_out.append({
-                            "src": {"type": src[0], "id": src[1]},
-                            "dst": {"type": dst[0], "id": dst[1]},
+                    agg_key = (src, dst, label)
+                    info = edge_map.get(agg_key)
+                    if not info:
+                        info = {
+                            "src": src,
+                            "dst": dst,
                             "action": label,
-                            "timestamp": event_ts_str
-                        })
+                            "timestamp": event_ts_str,
+                            "count": 0,
+                        }
+                        edge_map[agg_key] = info
+                    info["count"] += 1
                     
                     # 将源加入感兴趣列表
                     if src not in interesting_nodes:
                         interesting_nodes.add(src)
                         node_depths[src] = current_depth + 1
+
+        for info in edge_map.values():
+            action_label = info["action"]
+            if info["count"] > 1:
+                action_label = f"{action_label} (x{info['count']})"
+            edges_out.append(
+                {
+                    "src": {"type": info["src"][0], "id": info["src"][1]},
+                    "dst": {"type": info["dst"][0], "id": info["dst"][1]},
+                    "action": action_label,
+                    "timestamp": info["timestamp"],
+                }
+            )
 
         return self._format_output(nodes_meta, edges_out)
 
